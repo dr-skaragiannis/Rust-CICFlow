@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="100%" height="320">
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 700; font-size: 18px; fill: #1e293b; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; fill: #64748b; }
+    .label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; fill: #334155; }
+    .val { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; font-weight: bold; fill: #0f172a; }
+  </style>
+  <rect width="800" height="320" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="30" y="38" class="title">Peak Memory Usage (Resident Set Size - RSS)</text>
+  <text x="30" y="58" class="subtitle">Lower is better. Measured during 50,000 packet ingestion.</text>
+
+  <!-- Java -->
+  <text x="30" y="115" class="label">Java CICFlowMeter</text>
+  <rect x="180" y="92" width="500" height="36" rx="6" fill="#f87171"/>
+  <text x="690" y="115" class="val">170.5 MB</text>
+
+  <!-- Python -->
+  <text x="30" y="175" class="label">Python Scapy Meter</text>
+  <rect x="180" y="152" width="280" height="36" rx="6" fill="#fbbf24"/>
+  <text x="470" y="175" class="val">96.0 MB</text>
+
+  <!-- Rust -->
+  <text x="30" y="235" class="label">Rust CICFlowMeter</text>
+  <rect x="180" y="212" width="18" height="36" rx="6" fill="#34d399"/>
+  <text x="210" y="235" class="val">5.7 MB (30x lower RAM)</text>
+
+  <!-- Axis -->
+  <line x1="180" y1="270" x2="720" y2="270" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="180" y="290" class="subtitle">0 MB</text>
+  <text x="320" y="290" class="subtitle">50 MB</text>
+  <text x="460" y="290" class="subtitle">100 MB</text>
+  <text x="600" y="290" class="subtitle">150 MB</text>
+  <text x="680" y="290" class="subtitle">200 MB</text>
+</svg>
