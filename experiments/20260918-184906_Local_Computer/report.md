@@ -1,6 +1,6 @@
 # CICFlow vs Rust-CICFlow — Experimental Comparison Report
 
-**Platform:** `Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM`  
+**Platform:** `Local_Computer`  
 **Date/Time:** 2026-09-18 18:49:06  
 **System:** Windows 10 (AMD64) — AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD  
 **Python:** 3.11.9  ·  **Rust:** cargo 1.98.0 (797e8a9bc 2026-08-05)  

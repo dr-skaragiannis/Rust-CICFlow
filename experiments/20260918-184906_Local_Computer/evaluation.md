@@ -1,6 +1,6 @@
 # Evaluation — CICFlow vs Rust-CICFlow
 
-Host: **Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM** · Run: **2026-09-23 02:01:55**
+Host: **Local_Computer** · Run: **2026-09-18 18:49:06**
 
 
 ## Methodology
@@ -30,7 +30,7 @@ Host: **Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM** · Run: **2026-09-23 02:01:
 
 | Attribute | Value |
 |---|---|
-| Host | Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM |
+| Host | Local_Computer |
 | OS / Platform | Windows 10 (AMD64) |
 | Processor | AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD |
 | Python | 3.11.9 |
@@ -47,4 +47,18 @@ Host: **Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM** · Run: **2026-09-23 02:01:
 - Peak RSS is sampled at ~5 ms granularity; short-lived runs can slightly under-report the true instantaneous peak.
 - The Python package stores the frame EtherType (2048 for IPv4) in its `protocol` column rather than the IP L4 protocol number; feature reconciliation resolves each Python flow to a Rust flow sharing the same IP/port pair and adopts that flow's protocol.
 - The Python package reports `cwr_flag_count` as a copy of `fwd_urg_flags` (an upstream quirk) and `fwd/bwd_seg_size_avg` as copies of the packet-length means; the comparison maps upstream feature names onto the canonical 84-name schema where a clear semantic equivalent exists.
+- `http_real.pcap`: not a readable pcap/pcapng file
 
+
+
+---
+
+> **Corrections (2026-09-23).** The 'Python flows' values in this report reflect the
+> harness's line-based `csv_row_count` double-counting the pip writer's `\r\r\n`
+> terminators. True Python CSV record counts: `real_traffic` 15, `sample_traffic` 11,
+> `wireshark_http` 1 (vs reported 31/23/3). Python emitted equal or FEWER rows than
+> Rust everywhere: Rust 18 vs Python 15 on `real_traffic` (Rust's extra rows are 3
+> duplicate 5-tuple rows from canonical 120 s age expiry), 11 vs 11 identical on
+> `sample_traffic`, 0 vs 1 on `wireshark_http` (Rust min-packets gate). See the
+> flow-count correction note in `Discussion.md` and the `corrections` block in
+> `raw_results.json`.

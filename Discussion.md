@@ -4,13 +4,13 @@ This document discusses the results of the automated comparison between the refe
 `cicflowmeter` pip package (CICFlow, Python) and the Rust port (Rust-CICFlow) in this
 repository.
 
-**Run under discussion:** `experiments/20260918-184906_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/`
+**Run under discussion:** `experiments/20260918-184906_Local_Computer/`
 (2026-09-18, 3 repetitions per extractor, single worker thread).
 Full numbers live in `report.md`, `evaluation.md`, `results_summary.md` and
 `raw_results.json` in that folder; this file adds interpretation.
 
 > **2026-09-23 update — DEF CON 26 CTF corpus.** A second experiment on the
-> DEF CON 26 CTF packet captures (`experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/`,
+> DEF CON 26 CTF packet captures (`experiments/20260923-020154_Local_Computer/`,
 > see `analysis.md` there) scaled the comparison up to 3 × 200,000-packet
 > slices of the 49 GB / 156 M-packet capture and broadly holds the
 > performance conclusions while recalibrating the parity narrative:
@@ -147,7 +147,7 @@ DEF CON qualification: the 0-discrepancy result is partly a Pearson-criterion ar
 the systematic frame-vs-payload offset was present there too, e.g. MAE 97 B on
 `Total Length of Fwd Packet`, but r = 1.0 on 11 linearly-correlated flows could not
 trip the r < 0.999 gate. See the update note above and
-`experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/analysis.md`.)*
+`experiments/20260923-020154_Local_Computer/analysis.md`.)*
 
 `real_traffic.pcap` shows a wider spread. The residual differences group into three
 causes:

@@ -1,6 +1,6 @@
-# Results summary — `20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM` (corrected)
+# Results summary — `20260923-020154_Local_Computer` (corrected)
 
-Host **Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM** · 2026-09-23 02:01:55 · reps=2
+Host **Local_Computer** · 2026-09-23 02:01:55 · reps=2
 
 > **Note on flow counts.** The auto-generated `results_summary.md` reported
 > Python flow counts double-counted (the pip writer's `\r\r\n` terminators
@@ -16,7 +16,7 @@ Host **Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM** · 2026-09-23 02:01:55 · re
 
 ## Ablation (canonical constants via `pcmeter_driver_aligned.py`, head only)
 
-Run `20260923-023837_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM`: discrepant 62 → **57**, concordant 11 → **16**,
+Run `20260923-023837_Local_Computer`: discrepant 62 → **57**, concordant 11 → **16**,
 same matched-flow population (38,038).
 
 ## Full 49 GB capture (Rust only)
