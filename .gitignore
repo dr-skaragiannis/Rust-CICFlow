@@ -9,3 +9,5 @@ sample_output/
 .DS_Store
 *.pcapng
 experiments/**/subsets/*
+__pycache__/
+*.pyc
