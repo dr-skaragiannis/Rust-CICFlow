@@ -1,6 +1,6 @@
 # Evaluation — CICFlow vs Rust-CICFlow
 
-Host: **Bloodraven** · Run: **2026-09-23 02:38:37**
+Host: **Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM** · Run: **2026-09-23 02:01:55**
 
 
 ## Methodology
@@ -30,7 +30,7 @@ Host: **Bloodraven** · Run: **2026-09-23 02:38:37**
 
 | Attribute | Value |
 |---|---|
-| Host | Bloodraven |
+| Host | Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM |
 | OS / Platform | Windows 10 (AMD64) |
 | Processor | AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD |
 | Python | 3.11.9 |

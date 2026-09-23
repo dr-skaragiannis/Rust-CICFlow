@@ -90,7 +90,7 @@ All evaluations were executed on a standardized test environment:
 1. **`real_traffic.pcap`** (858 KB, 402 packets): Heterogeneous live internet capture featuring TLS 1.3/HTTPS, DNS queries/responses over UDP, HTTP/1.1 chunked downloads, and Linux Cooked v2 (`LINUX_SLL2`) encapsulation.
 2. **`sample_traffic.pcap`** (12 KB, 43 packets): Canonical multi-protocol test vector containing HTTP streams, DNS transactions, variable MSS, and bidirectional TCP FIN handshakes.
 3. **`benchmark_50k.pcap`** (38.5 MB, 50,000 packets): High-concurrency stress test consisting of 500 interleaved bidirectional TCP flows, variable payload distributions (64–576 bytes), and burst state changes.
-4. **`DEF CON 26 CTF packet captures.pcapng`** (49 GB, 156,114,913 packets): Real adversarial capture from the DEF CON 26 CTF 2018 network — pcapng (linktype Ethernet), TCP-dominated game traffic spanning the entire event. Used as full-capture stability/throughput workload plus three byte-exact 200,000-packet subsets (head/mid/tail) for the CICFlow-vs-Rust comparison (see `experiments/20260923-020154_Bloodraven/analysis.md`).
+4. **`DEF CON 26 CTF packet captures.pcapng`** (49 GB, 156,114,913 packets): Real adversarial capture from the DEF CON 26 CTF 2018 network — pcapng (linktype Ethernet), TCP-dominated game traffic spanning the entire event. Used as full-capture stability/throughput workload plus three byte-exact 200,000-packet subsets (head/mid/tail) for the CICFlow-vs-Rust comparison (see `experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/analysis.md`).
 
 ---
 
@@ -177,7 +177,7 @@ To prove 100% mathematical parity with the canonical Java baseline, every numeri
 > reference implements different *semantics* (full-frame vs payload-based length accounting,
 > 240 s-inactivity vs 120 s-age flow expiry, 5 ms vs 5 s active/idle windows, population vs
 > sample variance). Those deltas trace to upstream reference definitions, not Rust engine
-> computation. Full root-cause matrix: `experiments/20260923-020154_Bloodraven/analysis.md`.
+> computation. Full root-cause matrix: `experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/analysis.md`.
 
 ---
 
@@ -229,7 +229,7 @@ source (`cicflowmeter` 0.2.0) rather than attributed to computation error:
 
 Aligning the Python constants to canonical values (`scripts/pcmeter_driver_aligned.py`)
 reduces discrepancies 62 → 57, confirming the constants alone are a minor share. See
-`experiments/20260923-020154_Bloodraven/analysis.md` §4 for the full decomposition.
+`experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/analysis.md` §4 for the full decomposition.
 
 ---
 
@@ -275,7 +275,7 @@ cargo bench
 ./target/release/cicflowmeter -r tests/data/real_traffic.pcap -o /tmp/rust_eval --format csv -v
 ```
 
-#### Step 4b: DEF CON 26 CTF Real-World Corpus (`experiments/20260923-020154_Bloodraven/`)
+#### Step 4b: DEF CON 26 CTF Real-World Corpus (`experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/`)
 ```bash
 # 1. Download + extract the archive (49 GB -> single 49 GB pcapng):
 #    https://media.defcon.org/DEF%20CON%2026/DEF%20CON%2026%20ctf/DEF%20CON%2026%20ctf%20packet%20captures.rar
@@ -283,17 +283,17 @@ cargo bench
 ./target/release/cicflowmeter -r "<extracted>.pcap" -o /tmp/defcon_full --format csv \
     --flow-timeout 120000000 --activity-timeout 5000000 --threads 1 --min-packets 2
 # 3. Subset comparison (run from repo root; requires the sliced pcapngs in
-#    experiments/20260923-020154_Bloodraven/subsets/):
+#    experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/subsets/):
 python scripts/run_experiments.py \
-    --data-dir experiments/20260923-020154_Bloodraven/subsets \
+    --data-dir experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/subsets \
     --output-root experiments --reps 2 --skip-build
 # 3b. Constants-alignment ablation (Python canonical time constants):
 python scripts/run_experiments.py \
-    --data-dir experiments/20260923-020154_Bloodraven/subsets \
+    --data-dir experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/subsets \
     --output-root experiments --reps 1 --skip-build \
     --python-driver scripts/pcmeter_driver_aligned.py
 ```
-Measured results and root-cause analysis: `experiments/20260923-020154_Bloodraven/analysis.md`.
+Measured results and root-cause analysis: `experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/analysis.md`.
 
 #### Step 5: (Optional) Compare Against Java CICFlowMeter
 If Java JDK 11+ and Maven are installed:

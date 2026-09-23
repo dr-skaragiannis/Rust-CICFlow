@@ -1,8 +1,8 @@
 # DEF CON 26 CTF Packet Captures — CICFlow vs Rust-CICFlow
 
-Run folder: `experiments/20260923-020154_Bloodraven/` (main, canonical config)
-Ablation run: `experiments/20260923-023837_Bloodraven/` (Python constants aligned to canonical CIC-IDS)
-Host: Bloodraven · 2026-09-23 · extractors: pip `cicflowmeter` 0.2.0 (via `pcmeter_driver.py`) vs Rust release binary, as for the previous corpus.
+Run folder: `experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/` (main, canonical config)
+Ablation run: `experiments/20260923-023837_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/` (Python constants aligned to canonical CIC-IDS)
+Host: Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM · 2026-09-23 · extractors: pip `cicflowmeter` 0.2.0 (via `pcmeter_driver.py`) vs Rust release binary, as for the previous corpus.
 
 ## 1. Dataset
 

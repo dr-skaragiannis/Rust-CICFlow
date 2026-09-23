@@ -4,13 +4,13 @@ This document discusses the results of the automated comparison between the refe
 `cicflowmeter` pip package (CICFlow, Python) and the Rust port (Rust-CICFlow) in this
 repository.
 
-**Run under discussion:** `experiments/20260918-184906_Bloodraven/`
+**Run under discussion:** `experiments/20260918-184906_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/`
 (2026-09-18, 3 repetitions per extractor, single worker thread).
 Full numbers live in `report.md`, `evaluation.md`, `results_summary.md` and
 `raw_results.json` in that folder; this file adds interpretation.
 
 > **2026-09-23 update — DEF CON 26 CTF corpus.** A second experiment on the
-> DEF CON 26 CTF packet captures (`experiments/20260923-020154_Bloodraven/`,
+> DEF CON 26 CTF packet captures (`experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/`,
 > see `analysis.md` there) scaled the comparison up to 3 × 200,000-packet
 > slices of the 49 GB / 156 M-packet capture and broadly holds the
 > performance conclusions while recalibrating the parity narrative:
@@ -50,7 +50,7 @@ Full numbers live in `report.md`, `evaluation.md`, `results_summary.md` and
 |---|---|
 | Machine | ASUS ROG Zephyrus G14 (GA402RJ) |
 | CPU | AMD Ryzen 7 6800HS, 8 cores / 16 threads, ~3.2 GHz base |
-| RAM | 40 GB DDR5-4800 |
+| RAM | 40,960 MB DDR5-4800 |
 | OS | Windows 11 Pro 23H2 (build 22631) |
 | Python | 3.11.9; CICFlow package 0.2.0; scapy 2.6.1; pandas 3.0.2 |
 | Rust | cargo 1.98.0, release build, `--no-default-features` (no wpcap on Windows) |
@@ -147,7 +147,7 @@ DEF CON qualification: the 0-discrepancy result is partly a Pearson-criterion ar
 the systematic frame-vs-payload offset was present there too, e.g. MAE 97 B on
 `Total Length of Fwd Packet`, but r = 1.0 on 11 linearly-correlated flows could not
 trip the r < 0.999 gate. See the update note above and
-`experiments/20260923-020154_Bloodraven/analysis.md`.)*
+`experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/analysis.md`.)*
 
 `real_traffic.pcap` shows a wider spread. The residual differences group into three
 causes:

@@ -48,10 +48,10 @@ All empirical experiments were executed on a dedicated, NUMA-aware bare-metal se
 
 ## 3a. Real-World Adversarial Capture Validation (DEF CON 26 CTF, 2026-09-23)
 
-Run: `experiments/20260923-020154_Bloodraven/` (canonical config; subsets preserved in the run folder).
+Run: `experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/` (canonical config; subsets preserved in the run folder).
 Extractor under comparison here is the pip `cicflowmeter 0.2.0` Python reference driven through
 `scripts/pcmeter_driver.py` (the **Python** column of the synthetic tables above; no Java/EPYC run).
-Full detail and root-cause analysis: `experiments/20260923-020154_Bloodraven/analysis.md`.
+Full detail and root-cause analysis: `experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/analysis.md`.
 
 ### Table 3a-1: End-to-end performance on DEF CON 26 CTF 200k-packet slices (reps = 2, 1 worker thread)
 | Slice | Packets | Rust time | Python time | Speedup | Rust pkts/s | Python pkts/s | Rust peak RSS | Python peak RSS |

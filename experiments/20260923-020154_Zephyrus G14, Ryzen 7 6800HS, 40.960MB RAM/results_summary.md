@@ -1,6 +1,6 @@
-# Results summary — `20260923-020154_Bloodraven`
+# Results summary — `20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM`
 
-Host **Bloodraven** · 2026-09-23 02:01:55 · reps=2
+Host **Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM** · 2026-09-23 02:01:55 · reps=2
 
 | Dataset | Rust pkts/s | Python pkts/s | Speedup | Rust time | Python time | Time ratio | Rust RSS (MB) | Packets | Features concordant | Features discrepant |
 |---|---|---|---|---|---|---|---|---|---|---|

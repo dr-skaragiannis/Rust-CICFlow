@@ -248,7 +248,7 @@ To scale across many-core server architectures:
 ### 10a. Differential-Testing Lessons from the DEF CON 26 CTF Validation (2026-09-23)
 
 The 2006 corpus methodology above was stress-tested on a real 49 GB / 156.1 M-packet
-adversarial capture (`experiments/20260923-020154_Bloodraven/`). Two findings refine
+adversarial capture (`experiments/20260923-020154_Zephyrus G14, Ryzen 7 6800HS, 40.960MB RAM/`). Two findings refine
 Phase 10 practice:
 
 1. **Pearson-gate insensitivity to systematic offsets.** On 11-flow synthetic corpora,
