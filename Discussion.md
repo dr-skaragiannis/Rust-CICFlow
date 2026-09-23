@@ -227,7 +227,70 @@ extractors agree to within machine precision.
 
 On this machine and corpus, Rust-CICFlow is **~100x faster and ~25x more
 memory-efficient** than the pip CICFlow reference while producing **feature-identical
-output on the supported Ethernet/IPv4 path** (44 exact + 32 concordant, 0 discrepant
-features on `sample_traffic.pcap`). Remaining differences on the SLL2 capture are
-analysed, small, and attributable to documented implementation boundaries rather
-than to incorrect feature computation.
+per-flow output on the supported Ethernet/IPv4 path** (44 exact + 32 concordant,
+0 discrepant features on `sample_traffic.pcap`; *see the 2026-09-23 DEF CON
+qualification above and section 10 - the zero-discrepancy figure is an aggregate-Pearson
+result that masked a systematic length-accounting offset*). Remaining differences
+on the SLL2 capture are analysed, small, and attributable to documented
+implementation boundaries rather than to incorrect feature computation.
+
+---
+
+## 10. Is it important to keep the CICFlow format? - justification
+
+**Yes — and the DEF CON 26 experiments are the direct evidence for the
+trade-offs.** The 84-feature CICFlowMeter schema (column names, order, units)
+and, more subtly, its *semantics* (what each number means) are a de-facto
+industry specification. Keeping compatibility matters for concrete reasons:
+
+1. **ML dataset lineage.** CIC-IDS2017, CSE-CIC-IDS2018, ISCXTor and the wider
+   literature were generated with the canonical CICFlowMeter format. Every
+   published baseline (Random Forest, XGBoost, 1D-CNN accuracies in
+   `Evaluation-Results.md` Table 7) is conditioned on those exact feature
+   definitions. A new extractor that silently changes what a column *means*
+   (e.g. `Fwd Packet Length` summed over Ethernet frames instead of TCP
+   payloads) produces a corpus whose distributions differ from the public
+   benchmarks — models then need retraining, and results are no longer
+   comparable to the literature.
+
+2. **Cross-corpus comparability.** Flow features are only meaningful relative
+   to the pipeline that produced them. Without a pinned format, two labs
+   extracting the "same" 84 features from different captures cannot diff,
+   benchmark, or merge datasets. Our harness could reconcile 38,038 DEF CON
+   flows (92.5% with identical packet attribution, Flow Duration exactly equal
+   on 99.997% of those) *only because* both engines emit the canonical
+   bidirectional 5-tuple keys and comparable numeric semantics.
+
+3. **Drop-in interoperability.** Schema stability (84 canonical names in
+   canonical order, µs durations, bytes/s rates, "NeedManualLabel") is what
+   makes Rust-CICFlow a drop-in replacement: pandas/Polars pipelines, dataset
+   generators, and downstream NIDS feeds consume the output unchanged.
+
+4. **Empirical cost of breaking semantics** (measured on the DEF CON 26 CTF
+   corpus, `experiments/20260923-020154_Local_Computer/analysis.md`): the pip
+   `cicflowmeter` Python reference, which deviates from the canonical
+   semantics in four ways, produced discrepancies in 53-62 of 76 feature
+   groups. Each deviation is individually "small", but on real traffic they
+   compound: frame-vs-payload length accounting (MAE 97-337 B on forward byte
+   totals), 240 s-inactivity vs 120 s-age flow expiry (Python rows spanning up
+   to ~240 s warp Duration/IAT/Active-Idle features), 5 ms active windows, and
+   population-vs-sample variance. A DataFrame mixing rows from both engines
+   would silently carry these four biases - precisely the failure mode format
+   compatibility exists to prevent.
+
+5. **Debuggability of the reference.** Canonical fidelity with *documented,
+   opt-in* bug-compatibility (`--compat` mode replicating known Java quirks,
+   e.g. the original line-129 pre-direction length accounting) is a better
+   contract than either extreme: semantic divergence or blind legacy-cookie
+   fidelity. Deviations must be intentional, flagged, and testable - never
+   silent.
+
+**Policy adopted:** the 84-feature schema and the canonical CIC-IDS semantics
+(payload-based length accounting, 120 s flow-age expiry, 5 s activity windows,
+sample variance per the documented Welford formula) are the compatibility
+baseline; the pip Python package's non-canonical variants are *not* the
+compatibility target. Parity verification must therefore always report
+per-flow MAE/max-diff distributions in addition to aggregate Pearson
+correlations, because the r > 0.999 gate demonstrably hides systematic offsets
+on small corpora (`sample_traffic.pcap` passed with MAE 97 B) and fails them
+on real traffic.

@@ -272,3 +272,28 @@ The engine implemented the canonical side of every contested semantic:
 payload-based length accounting, symmetric FIN/RST FSM with 120 s age expiry
 (`src/flow/generator.rs`), 5 s activity timeout, and sample variance per the
 Welford formula in Phase 3.
+
+### 10b. Format-Compatibility Policy — why canonical CICFlow fidelity is a hard requirement
+
+The 84-feature CICFlowMeter schema is treated as a *specification contract*,
+not as a convenience. Justification (grounded in the DEF CON 26 validation):
+
+1. **Published-benchmark lineage.** The CIC-IDS2017/2018, CSE-CIC-IDS2018 and
+   ISCXTor corpora — with every ML baseline reported against them — were
+   generated under the canonical semantics. Silent semantic drift breaks
+   comparability with the literature and invalidates models trained on the
+   public datasets (distribution shift forces retraining).
+2. **Reconciliation needs a shared key space.** The 38,038-flow DEF CON
+   reconciliation (92.5% identical packet attribution, Flow Duration equal on
+   99.997%) is only possible because both engines emit the canonical
+   bidirectional 5-tuple keys with comparable numeric semantics.
+3. **Divergence compounds on adversarial traffic.** Four individually "small"
+   upstream deviations (frame-length accounting, 240 s inactivity expiry,
+   5 ms active windows, population variance) produced 53-62 discrepant of 76
+   feature groups on real CTF capture-derived flows.
+4. **Policy.** Canonical CIC-IDS semantics are the compatibility baseline;
+   bug-for-bug legacy behaviour is available behind the explicit `--compat`
+   flag; any further semantic change must be (a) flagged, (b) documented, and
+   (c) verified through per-flow MAE/max-diff reporting in addition to
+   aggregate Pearson correlation. Full cost-benefit rationale in
+   `Discussion.md` §10.

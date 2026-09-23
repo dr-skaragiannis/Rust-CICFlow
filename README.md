@@ -320,6 +320,23 @@ python3 /home/user/cicflowmeter-rust/scripts/compare_outputs.py /tmp/java_eval/s
 
 The flow engine extracts the complete set of 84 features in exact canonical order:
 
+> **Why the CICFlow format is kept (and why it matters).** The canonical
+> CICFlowMeter schema is a de-facto specification: the CIC-IDS2017/2018,
+> CSE-CIC-IDS2018 and ISCXTor corpora — and every ML baseline published on
+> them — are conditioned on these exact 84 column names, units and semantics.
+> Deviating silently from them makes new corpora non-comparable with the
+> literature and invalidates models trained on the public benchmarks
+> (retraining required). The competitor pip `cicflowmeter` Python package
+> deviates from that canonical semantics in four documented ways (frame-vs-payload
+> length accounting, 240 s-inactivity expiry, 5 ms active windows, population
+> variance) — measurable as 53-62 discrepant feature groups out of 76 on the
+> real 49 GB DEF CON 26 CTF capture
+> (`experiments/20260923-020154_Local_Computer/analysis.md`). Rust-CICFlow keeps
+> the canonical semantics as the compatibility baseline, plus an opt-in
+> `--compat` mode for bug-for-bug parity with the legacy Java engine where it
+> is needed. Detailed justification:
+> `Discussion.md` §10 ("Is it important to keep the CICFlow format?").
+
 ```
  1. Flow ID                     29. Fwd IAT Std                 57. ECE Flag Count
  2. Src IP                      30. Fwd IAT Max                 58. Down/Up Ratio
