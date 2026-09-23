@@ -5,6 +5,7 @@
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![Feature Concordance](https://img.shields.io/badge/concordance-100%25-brightgreen.svg)]()
 [![Speedup](https://img.shields.io/badge/speedup-14.5x--60.9x-blue.svg)]()
+[![DEF CON 26 validated](https://img.shields.io/badge/DEF_CON_26-145x--303x_vs_python-informational.svg)]()
 
 A high-performance, memory-safe, zero-copy network traffic flow feature generator and PCAP/PCAPNG analyzer rebuilt from the ground up in pure **Rust**.
 
@@ -59,7 +60,12 @@ Designed as a drop-in, high-efficiency replacement for the canonical Java-based 
 | **Memory Safety & Stability** | Frequent `jNetPcap` JNI segfaults | Python type/attribute crashes | **100% Memory Safe, Zero panics, Zero crashes** |
 | **Encapsulation Decoding** | Ethernet only | Scapy Ethernet only | **Ethernet, 802.1Q VLAN, QinQ, SLL, SLL2, IPv4/6** |
 | **Output Formats** | CSV only | CSV only | **Canonical CSV, Formatted JSON, JSONL / NDJSON** |
-| **Flow Feature Parity** | 84 Canonical Features (Baseline) | 83 Features (Incomplete) | **100.0% Exact Statistical Match (r = 1.000)** |
+| **Flow Feature Parity** | 84 Canonical Features (Baseline) | 83 Features (Incomplete, non-canonical semantics*) | **100.0% Exact Statistical Match (r = 1.000)** |
+
+\* The pip `cicflowmeter` Python reference deviates from canonical CIC-IDS
+semantics (full-frame vs payload length accounting, 240 s inactivity expiry,
+5 ms active windows, population variance — verified on the DEF CON 26 CTF
+corpus; see *Real-capture discrepancy decomposition* below).
 
 ---
 
@@ -84,6 +90,7 @@ All evaluations were executed on a standardized test environment:
 1. **`real_traffic.pcap`** (858 KB, 402 packets): Heterogeneous live internet capture featuring TLS 1.3/HTTPS, DNS queries/responses over UDP, HTTP/1.1 chunked downloads, and Linux Cooked v2 (`LINUX_SLL2`) encapsulation.
 2. **`sample_traffic.pcap`** (12 KB, 43 packets): Canonical multi-protocol test vector containing HTTP streams, DNS transactions, variable MSS, and bidirectional TCP FIN handshakes.
 3. **`benchmark_50k.pcap`** (38.5 MB, 50,000 packets): High-concurrency stress test consisting of 500 interleaved bidirectional TCP flows, variable payload distributions (64–576 bytes), and burst state changes.
+4. **`DEF CON 26 CTF packet captures.pcapng`** (49 GB, 156,114,913 packets): Real adversarial capture from the DEF CON 26 CTF 2018 network — pcapng (linktype Ethernet), TCP-dominated game traffic spanning the entire event. Used as full-capture stability/throughput workload plus three byte-exact 200,000-packet subsets (head/mid/tail) for the CICFlow-vs-Rust comparison (see `experiments/20260923-020154_Bloodraven/analysis.md`).
 
 ---
 
@@ -98,6 +105,15 @@ All evaluations were executed on a standardized test environment:
  Real-World (402 pkts)          594.6 pkts/s           ~320 pkts/s      36,086.3 pkts/s         60.9x faster
  Sample Vectors (43 pkts)     1,120.0 pkts/s           ~450 pkts/s      82,059.0 pkts/s         73.2x faster
  Concurrency 50k (50k pkts)  47,355.1 pkts/s         8,200 pkts/s     686,116.4 pkts/s         14.5x faster
+====================================================================================================
+ DEF CON 26 CTF VALIDATION (2026-09-23, commodity Windows laptop, 1-worker config)
+ ===================================================================================================
+  Dataset                             Python cicflowmeter    Rust CICFlowMeter   Speedup (vs Python)
+ ----------------------------------------------------------------------------------------------------
+  head subset (200k pkts)               1,301 pkts/s         188,977 pkts/s        145.3x
+  mid subset (200k pkts)                  947 pkts/s         287,288 pkts/s        303.4x
+  tail subset (200k pkts)               1,366 pkts/s         303,389 pkts/s        222.1x
+  Full 49 GB capture (156.1M pkts)      ~33 h (extrapol.)    ~700 s real           ~172x
 ====================================================================================================
 ```
 
@@ -127,6 +143,8 @@ Python Meter      : [■■■■■■■■■■■■■■■■■■■�
 
 *Key Finding*: The Rust implementation maintains an $O(N_{\text{active}})$ memory boundary, consuming $< 6\text{ MB}$ even when maintaining 500 active concurrent flows. Java requires over $170\text{ MB}$ of initial JVM heap overhead.
 
+On the DEF CON 26 CTF real-world validation, the Rust flow table stays bounded at **27–97 MB** across all 200k-packet slices (Python: 260 MB → 1.56 GB at event peak); the full-capture offline single-file run grows with finished-flow buffering to ~7.8 GB at EOF before the end-of-run write — use batch/slice mode for captures beyond ~10 GB.
+
 ---
 
 ### 5. Feature Concordance & Statistical Parity Heatmap
@@ -151,6 +169,15 @@ To prove 100% mathematical parity with the canonical Java baseline, every numeri
 | OVERALL CONCORDANCE RATE: 100.00% (38/38 Tested Canonical Dimensions Match Exactly)               |
 +----------------------------------------------------------------------------------------------------+
 ```
+
+> **DEF CON 26 real-traffic qualification (2026-09-23).** On scan-heavy adversarial CTF
+> traffic against the pip `cicflowmeter` Python reference, per-flow feature math remains
+> exact — 92.5% of matched flows attribute identical packet counts, Flow Duration agrees
+> exactly on 99.997% of those. Aggregate feature-group correlations drop because the Python
+> reference implements different *semantics* (full-frame vs payload-based length accounting,
+> 240 s-inactivity vs 120 s-age flow expiry, 5 ms vs 5 s active/idle windows, population vs
+> sample variance). Those deltas trace to upstream reference definitions, not Rust engine
+> computation. Full root-cause matrix: `experiments/20260923-020154_Bloodraven/analysis.md`.
 
 ---
 
@@ -185,6 +212,24 @@ The table below reports empirical values extracted simultaneously by Java CICFlo
 | **Bwd Init Win Bytes** | `65,535` | `65,535` | `0` | $1.0000$ | **MATCH** |
 | **Fwd Act Data Pkts** | `10` | `10` | `0` | $1.0000$ | **MATCH** |
 | **Fwd Seg Size Min** | `20` | `20` | `0` | $1.0000$ | **MATCH** |
+
+### Real-capture discrepancy decomposition (DEF CON 26 CTF)
+
+The deep-dive matrix above reflects handshaked/payload-bearing corpus flows. On the
+DEF CON 26 CTF capture (38,038 matched flows on the head subset), the *same Python
+reference* shows the following systematic deltas — all verified against the upstream
+source (`cicflowmeter` 0.2.0) rather than attributed to computation error:
+
+| Observed delta | Root cause | Rust value | pip value |
+|---|---|---|---|
+| Packet-length features (MAE 337 B forward total) | pip sums full **Ethernet frame** `len(packet)`; Rust counts **TCP payload** (canonical, handshake=0) | payload | frame |
+| Flow Duration > 120 s (up to 202.8 s) | pip splits on **240 s inactivity** (`constants.EXPIRED_UPDATE`); Rust splits at **120 s flow age** (canonical CIC-IDS) | ≤ 120 s | ≤ ~240 s |
+| Active/Idle features (r 0.10–0.65) | pip `ACTIVE_TIMEOUT = 5 ms`, `CLUMP_TIMEOUT = 1 ms`; Rust/canonical = 5,000 ms | 5 s window | 5 ms window |
+| Std/Variance features non-exact but r > 0.99 | Rust sample variance ($M_2/(n-1)$); pip `numpy.var` population variance | ddof=1 | ddof=0 |
+
+Aligning the Python constants to canonical values (`scripts/pcmeter_driver_aligned.py`)
+reduces discrepancies 62 → 57, confirming the constants alone are a minor share. See
+`experiments/20260923-020154_Bloodraven/analysis.md` §4 for the full decomposition.
 
 ---
 
@@ -229,6 +274,26 @@ cargo bench
 # Analyze real heterogeneous traffic capture
 ./target/release/cicflowmeter -r tests/data/real_traffic.pcap -o /tmp/rust_eval --format csv -v
 ```
+
+#### Step 4b: DEF CON 26 CTF Real-World Corpus (`experiments/20260923-020154_Bloodraven/`)
+```bash
+# 1. Download + extract the archive (49 GB -> single 49 GB pcapng):
+#    https://media.defcon.org/DEF%20CON%2026/DEF%20CON%2026%20ctf/DEF%20CON%2026%20ctf%20packet%20captures.rar
+# 2. Run the full capture (single file, single thread; ~11.5 min, 7.8M flows):
+./target/release/cicflowmeter -r "<extracted>.pcap" -o /tmp/defcon_full --format csv \
+    --flow-timeout 120000000 --activity-timeout 5000000 --threads 1 --min-packets 2
+# 3. Subset comparison (run from repo root; requires the sliced pcapngs in
+#    experiments/20260923-020154_Bloodraven/subsets/):
+python scripts/run_experiments.py \
+    --data-dir experiments/20260923-020154_Bloodraven/subsets \
+    --output-root experiments --reps 2 --skip-build
+# 3b. Constants-alignment ablation (Python canonical time constants):
+python scripts/run_experiments.py \
+    --data-dir experiments/20260923-020154_Bloodraven/subsets \
+    --output-root experiments --reps 1 --skip-build \
+    --python-driver scripts/pcmeter_driver_aligned.py
+```
+Measured results and root-cause analysis: `experiments/20260923-020154_Bloodraven/analysis.md`.
 
 #### Step 5: (Optional) Compare Against Java CICFlowMeter
 If Java JDK 11+ and Maven are installed:

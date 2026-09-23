@@ -7,3 +7,5 @@ sample_output/
 *.jsonl
 *.pcap
 .DS_Store
+*.pcapng
+experiments/**/subsets/*

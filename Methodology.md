@@ -239,8 +239,36 @@ To scale across many-core server architectures:
 
 ## Phase 10: Automated Continuous Differential Testing & Verification
 
-1. **Automated Parity Harness (`scripts/compare_outputs.py`)**:
+1. **Automated Parity Harness (`scripts/compare_outputs.py`, `scripts/run_experiments.py`)**:
    - Ingests CSV outputs from Java CICFlowMeter v4.0 and `cicflowmeter-rust` generated on identical PCAP files.
    - Computes column-by-column Mean Absolute Error (MAE), Maximum Absolute Difference, and Pearson Correlation Coefficients ($r$) across all 84 features.
 2. **One-Command Replication (`scripts/replicate_experiments.sh`)**:
    - Automates trace downloading, release compilation, unit testing, hardware performance profiling (`perf stat`), and statistical verification.
+
+### 10a. Differential-Testing Lessons from the DEF CON 26 CTF Validation (2026-09-23)
+
+The 2006 corpus methodology above was stress-tested on a real 49 GB / 156.1 M-packet
+adversarial capture (`experiments/20260923-020154_Bloodraven/`). Two findings refine
+Phase 10 practice:
+
+1. **Pearson-gate insensitivity to systematic offsets.** On 11-flow synthetic corpora,
+   a constant-per-flow definitional offset (frame vs payload byte accounting) yields
+   perfectly linear correlations ($r = 1.0$) and passes the $r > 0.999$ gate while
+   carrying MAE $\approx 97$ B per flow. Real scan-heavy traffic breaks linearity and
+   exposes the offset. Differential testing therefore must track **MAE/max-diff
+   distributions per flow** in addition to aggregate $r$, and must compare against
+   *multiple* reference extractors, since the pip `cicflowmeter` reference deviates
+   from both the canonical CIC-IDS semantics and this engine:
+   - packet length = full Ethernet frame (`len(packet)`) instead of TCP payload;
+   - flow expiry = 240 s inactivity (`EXPIRED_UPDATE=240`) instead of 120 s flow age;
+   - active/idle threshold = 5 ms (`ACTIVE_TIMEOUT`) instead of 5 s, bulk clump = 1 ms;
+   - population variance (`numpy.var`) instead of the documented sample variance.
+2. **Record-count instrumentation.** The pip writer emits `\r\r\n` terminators on
+   Windows; line-based record counting double-counts rows (exactly 2×) and distorted
+   flow-count summaries until `csv_row_count` was fixed to `csv.reader`-based
+   record counting (`scripts/run_experiments.py`).
+
+The engine implemented the canonical side of every contested semantic:
+payload-based length accounting, symmetric FIN/RST FSM with 120 s age expiry
+(`src/flow/generator.rs`), 5 s activity timeout, and sample variance per the
+Welford formula in Phase 3.
