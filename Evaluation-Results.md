@@ -178,6 +178,52 @@ single-core (non-Rayon) bench execution vs the legacy EPYC testbed.
 
 ---
 
+## 3c. Evaluation coverage audit — documented vs measured (2026-09-24)
+
+Distinguishing what the methodology documents from what has actually been
+executed in the 2026-09 sessions (runs `20260923-020154`,
+`20260923-023837`, `20260924-184129`).
+
+### Table 3c-1: Datasets — execution status
+| Dataset | Docs claim | Executed here? | Note |
+| :--- | :--- | :--- | :--- |
+| `benchmark_50k.pcap` (W1, "32.4 MB" original) | legacy-documented | **not as-is** | original file absent from the repo; a deterministic equivalent (15.6 MB, 50k pkts / 500 flows) was regenerated and used (§3b); regenerated file kept out of git by `*.pcap` ignore |
+| `real_traffic.pcap` (W2) | ✓ | ✓ measured | includes SLL2 caveat (Python drops those frames) |
+| `sample_traffic.pcap` (W3) | ✓ | ✓ measured | |
+| `http_real.pcap` | (14 B file) | **not testable** | corrupt/empty capture; harness records "not a readable pcap" |
+| `wireshark_http.pcap` | (1 pkt) | ✓ measured | 0 Rust / 1 Python flow (min-packets gate) |
+| CIC-IDS2017 Friday-WorkingHours (W4) | legacy-documented | **NOT executed** | public PCAP endpoints retired (dataset IP now serves UNB landing page; official CIC registration required to obtain) |
+| CIC-IDS2017 Wednesday-WorkingHours (W5) | legacy-documented | **NOT executed** | same as W4 |
+| In-memory micro-bench stream (W6) | legacy-documented | ✓ measured via `cargo bench` (§3b) | |
+| DEF CON 26 CTF capture (W7) | n/a | ✓ measured (subsets + full-capture) | flows published to Zenodo package pending |
+| Live interface capture (`-i eth0`, BPF, libpcap/wpcap path) | documented | **NOT executed** | libwpcap absent on this Windows host; live path untested here |
+| Docker / systemd deployment, Linux-only packaging | documented | **NOT executed** | Windows host; `replicate_experiments.sh` Linux-oriented (`perf`) |
+| Java CICFlowMeter reference outputs (all datasets) | legacy-documented | **NOT executed** | requires JDK + jNetPcap JNI libpcap build; `scripts/compare_outputs.py` exists for when it is available |
+| Python binding / polars path (`python/cicflowmeter.py`) | documented | **NOT executed** | library wrapper, not exercised in these sessions |
+| AF_XDP / DPDK line-rate mode (Regime 3) | documented | **NOT executed** | requires NIC + kernel-bypass setup |
+
+### Table 3c-2: Methodology experiment items — execution status
+| Methodology item (documented table/section) | Executed here? | Gap |
+| :--- | :--- | :--- |
+| Tables 1, 2: Java-vs-Python-vs-Rust end-to-end rows | **NOT executed** (Java leg) | Java numbers retained as legacy docs; Rust+Python legs measured (§3a/§3b) |
+| Table 3 (perf-stat counters: IPC, L1/L3 misses, branches, context switches) | **NOT executed** | requires Linux `perf stat`; Windows host |
+| Table 4 (ingest latency p50/p90/p99/p99.9) | **NOT executed** | no latency instrumentation run |
+| Table 5 (multi-core scaling 1→64 cores) | **NOT executed** | multi-thread used only for batch directory mode; no scaling sweep run |
+| Tables 7-8 (RF/XGBoost/MLP/1D-CNN downstream ML parity + per-attack breakdown) | **NOT executed** | no training pipeline in this environment |
+| Table 9a (subsystem ablations A-D: SipHash, Java-list model, Rayon off, heap-copy) | **NOT executed** | only the two headline `cargo bench` gauges measured |
+| Table 10 (per-subsystem latency decomposition) + Table 11 (hash backends) | **NOT executed** | micro-subsystem instrumentation not run |
+| pip Python "OOM on >1GB traces" claim | **NOT verified** | observed instead: 1.56 GB peak RSS at CTF-event peak (no crash) |
+| Constants-alignment ablation (pip canonical constants) | partial | executed on head subset only; mid/tail not ablated |
+| Full-capture Python run (any dataset ≥ GB class) | **NOT executed by design** | infeasible wall-time on this host (33 h extrapolated); documented as such in §3a |
+| Happy-path unit tests (`cargo test --all-targets`) | partially | README claims 11 suites passing; this session ran cargo bench --no-default-features lib tests only |
+
+Everything measured on this host is reproducible from the committed scripts
+(`scripts/run_experiments.py` + subsets, `scripts/gen_benchmark_50k.py`,
+`cargo bench --no-default-features`), and all legacy-documented items must be
+re-verified before being cited as results on other hardware.
+
+---
+
 ## 4. Memory Scalability & Peak Resident Set Size (RSS)
 
 ### Table 2: Peak Memory Footprint (RSS) and Garbage Collection Profiling
