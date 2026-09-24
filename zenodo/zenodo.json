@@ -1,0 +1,37 @@
+{
+  "title": "DEF CON 26 CTF Network Packet Capture (2018) and Extracted CIC-IDS-Style Flow Feature Vectors",
+  "upload_type": "dataset",
+  "description": "<p><strong>Dataset package for the DEF CON 26 CTF 2018 network capture and its extracted flow features, assembled for the Rust-CICFlow evaluation corpus.</strong></p><p>The primary artifact is the full <strong>DEF CON 26 CTF packet capture</strong>: a single 52.92 GB pcapng file (49.0 GB of packet content + pcapng overhead per 16.3 KB mean block) containing <strong>156,114,913 Ethernet packets</strong> (linktype 1, single interface, all Enhanced Packet Blocks) captured during the DEF CON 26 Capture-The-Flag competition (first packet 2018-08-10 22:48:42 UTC; TCP-dominated adversarial CTF traffic).</p><p>Because ingest-side reuse benefits from compact slices, three <strong>byte-exact representative subsets</strong> (200,000 packets each, raw block copies preserving SHB + IDB + contiguous EPBs) accompany the full capture:</p><ul><li><code>defcon26_head.pcapng</code> - packets [0, 200000): event start, scan/handshake-dominated (~129 B mean frame, 25.7 MB)</li><li><code>defcon26_mid.pcapng</code> - packets [78,057,456, 78,257,456): event peak, bulk game traffic (~506 B mean frame, 101.3 MB)</li><li><code>defcon26_tail.pcapng</code> - last 200,000 packets: event end (48.0 MB)</li></ul><p><strong>Extracted flow features.</strong> The 84-feature CIC-IDS/CICFlowMeter-style bidirectional flow vector was extracted with <code>Rust-CICFlow</code> (config: flow timeout 120 s flow-age, activity timeout 5 s, min-packets 2, canonical payload-based length accounting, sample variance per Welford). Full-capture run: <strong>156,114,913 packets &rarr; 7,798,789 flows</strong> in ~700 s single-threaded (4,583.4 MB CSV), plus the six subset flow CSVs (Rust and Python reference extractor outputs for head/mid/tail) that document measured feature parity and its four traced upstream semantic deltas.</p><p><strong>Verification.</strong> SHA-256 checksums for every file are provided in <code>SHA256SUMS.txt</code>. The stream is suitable for intrusion-detection benchmarking, adversarial traffic analysis, and extractor reproducibility experiments.</p><p><strong>Provenance.</strong> The source packet histogram derives from the <code>DEF CON 26 ctf packet captures</code> archive published on <a href=\"https://media.defcon.org/DEF%20CON%2026/DEF%20CON%2026%20ctf/DEF%20CON%2026%20ctf%20packet%20captures.rar\">media.defcon.org</a>; the flow-feature extraction and the subset slicing tool (<code>scripts/extract_subsets.py</code>) were produced with the open-source <a href=\"https://github.com/dr-skaragiannis/Rust-CICFlow\">Rust-CICFlow</a> engine and harness in this repository. Attribution to DEF CON and to traffic-derived artifacts is embedded in the README; the Python-side pip reference is <code>cicflowmeter 0.2.0</code> (uehara).</p>",
+  "creators": [
+    {
+      "name": "Skaragiannis, D.",
+      "affiliation": "Rust-CICFlow (github.com/dr-skaragiannis/Rust-CICFlow)"
+    }
+  ],
+  "keywords": [
+    "network security",
+    "intrusion detection",
+    "CIC-IDS-style flow features",
+    "DEF CON CTF",
+    "pcapng",
+    "network telemetry",
+    "Rust",
+    "CTF-2018"
+  ],
+  "license": "CC-BY-4.0",
+  "access_right": "open",
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/dr-skaragiannis/Rust-CICFlow",
+      "relation": "isSupplementedBy",
+      "scheme": "url",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://media.defcon.org/DEF CON 26/DEF CON 26 ctf/DEF CON 26 ctf packet captures.rar",
+      "relation": "isDerivedFrom",
+      "scheme": "url"
+    }
+  ]
+}

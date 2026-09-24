@@ -11,3 +11,4 @@ sample_output/
 experiments/**/subsets/*
 __pycache__/
 *.pyc
+!zenodo/zenodo.json

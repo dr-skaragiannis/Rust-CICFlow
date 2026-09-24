@@ -483,6 +483,22 @@ fn main() -> anyhow::Result<()> {
 
 ## Dataset Generation (CIC-IDS2017 / 2018)
 
+> **Published dataset package (Zenodo).** The large-artifact corpus used in the
+> DEF CON 26 evaluation — the full 52.9 GB DEF CON 26 CTF pcapng (156.1 M
+> packets), its three 200k-packet byte-exact subsets, and the extracted
+> 84-feature flow CSVs (7,798,789 flows) — is packaged with Zenodo-ready
+> metadata, SHA-256 manifests, byte-split tooling (for the file above the
+> 50 GB limit), and a scripted REST uploader under [`zenodo/`](zenodo/):
+> - `zenodo/zenodo.json` — deposit-schema metadata (paste-ready)
+> - `zenodo/README.md` — files, local locations, licenses & attribution
+> - `zenodo/MANUAL_CHECKLIST.md` — browser-publish checklist
+> - `zenodo/zenodo_upload.py` — API uploader (resumable, streaming)
+> - `zenodo/zenodo_split.py` — 50 GB-cap partitioner for the full capture
+> - `zenodo/SHA256SUMS.txt` — SHA-256 of every archived artifact
+>
+> DOI: *placeholder — update this line with the Zenodo DOI after publishing
+> (see `zenodo/MANUAL_CHECKLIST.md`).*
+
 To extract features matching the canonical Canadian Institute for Cybersecurity settings:
 ```bash
 ./target/release/cicflowmeter \
