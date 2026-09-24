@@ -91,6 +91,12 @@ The order-of-magnitude gap means the choice of extractor matters for live captur
 (CICFlow's classic use case): Rust-CICFlow can keep up with high pps on commodity
 hardware where the Python implementation cannot.
 
+*Figures:* the `assets/defcon26_*.svg` figures summarise all DEF CON 26 runs;
+the legacy `assets/throughput_comparison`, `memory_scaling` and
+`feature_correlation_heatmap` SVGs summarise the Workloads 1–3 corpus only —
+both figure sets are now linked side by side in `README.md` → *Visual Summary &
+Key Benchmarks*.
+
 ## 3. Flow extraction
 
 | Dataset | Rust flows | Python flows | Matched | Notes |

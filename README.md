@@ -15,13 +15,42 @@ Designed as a drop-in, high-efficiency replacement for the canonical Java-based 
 
 ## Visual Summary & Key Benchmarks
 
+### Legacy / synthetic corpus (Workloads 1–3: Java CICFlowMeter v4.0 vs pip Python vs Rust)
+
 <div align="center">
-  <img src="assets/throughput_comparison.svg" alt="Throughput Comparison" width="780"/>
+  <img src="assets/throughput_comparison.svg" alt="Throughput Comparison (Workloads 1-3)" width="780"/>
   <br/><br/>
-  <img src="assets/memory_scaling.svg" alt="Memory Scaling" width="780"/>
+  <img src="assets/memory_scaling.svg" alt="Memory Scaling (Workloads 1-3)" width="780"/>
   <br/><br/>
-  <img src="assets/feature_correlation_heatmap.svg" alt="Feature Correlation Heatmap" width="780"/>
+  <img src="assets/feature_correlation_heatmap.svg" alt="Feature Correlation Heatmap (Java reference)" width="780"/>
 </div>
+
+### Real-world adversarial corpus (DEF CON 26 CTF, 2026-09-23 measurement)
+
+The three figures below cover the DEF CON 26 CTF experiments (Workload 7 in
+`Evaluation-Results.md` §3a): the full 52.9 GB / 156.1 M-packet pcapng plus
+three byte-exact 200k-packet subsets, compared **pip `cicflowmeter` vs
+Rust-CICFlow** on this host. Throughput/memory bars use all measured subsets
+plus the full-capture run (hatched = single-file full-capture Rust run with
+offline write-at-end buffering; the Python figure for the full capture is the
+~33 h extrapolation, ~172× projected speedup).
+
+<div align="center">
+  <img src="assets/defcon26_throughput_speedup.svg" alt="DEF CON 26 throughput and speedup" width="780"/>
+  <br/><br/>
+  <img src="assets/defcon26_memory_rss.svg" alt="DEF CON 26 peak memory" width="780"/>
+  <br/><br/>
+  <img src="assets/defcon26_feature_concordance.svg" alt="DEF CON 26 feature concordance and flow-attribution agreement" width="780"/>
+</div>
+
+Coverage note: the legacy figures summarise the Java-reference and micro-benchmark
+corpora (`Evaluation-Results.md` Tables 1–11 and the §5/§6 matrices); the DEF CON
+figures summarise the real adversarial 49 GB-capture comparison measured in
+`experiments/20260923-020154_Local_Computer/` (145–303× speedup, 50× lower peak
+RSS at CTF peak, and the traced upstream semantics behind the aggregate
+discrepancies — full decomposition in `Discussion.md` §4, §10). Per-run PNG
+plots (incl. the constants-alignment ablation) live in each
+`experiments/<run>/plots/` folder.
 
 ---
 

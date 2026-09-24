@@ -69,6 +69,15 @@ Full detail and root-cause analysis: `experiments/20260923-020154_Local_Computer
 | Throughput | ≈ 226,000 pkts/s (Fig. §10 Regime 1 range on this host) |
 | Peak working set | ~7.8 GB at EOF (offline write-at-end buffering of finished flows; bounded 27–97 MB on slices) |
 
+### Figures 3a-1/3a-2: throughput/speedup and memory across **all** DEF CON 26 workloads (subsets + full capture)
+
+![DEF CON 26 throughput](assets/defcon26_throughput_speedup.svg)
+![DEF CON 26 memory](assets/defcon26_memory_rss.svg)
+
+*(The `assets/*.svg` figures named `throughput_comparison`, `memory_scaling`
+and `feature_correlation_heatmap` cover the legacy Workloads 1–3/Java-reference
+corpus only; the `defcon26_*` figures above cover the DEF CON 26 experiments.)*
+
 ### Table 3a-3: Flow extraction agreement (true CSV record counts)
 | Slice | Rust flows | Python flows | Δ | Matched (bidirectional 5-tuple) |
 | :--- | :--- | :--- | :--- | :--- |
@@ -109,6 +118,10 @@ the constants alone are a minor share; length semantics + expiry model dominate.
 harness's line-based `csv_row_count` to report exactly 2× Python flow counts
 (77,135 vs 38,567). `csv_row_count` is fixed to record-based counting; earlier
 small-corpus summaries in this document predate that fix.
+
+### Figure 3a-3: feature-status + flow-attribution agreement across all DEF CON 26 slices
+
+![DEF CON 26 concordance](assets/defcon26_feature_concordance.svg)
 
 ---
 
