@@ -118,7 +118,7 @@ All evaluations were executed on a standardized test environment:
 #### Evaluation PCAP Capture Profiles:
 1. **`real_traffic.pcap`** (858 KB, 402 packets): Heterogeneous live internet capture featuring TLS 1.3/HTTPS, DNS queries/responses over UDP, HTTP/1.1 chunked downloads, and Linux Cooked v2 (`LINUX_SLL2`) encapsulation.
 2. **`sample_traffic.pcap`** (12 KB, 43 packets): Canonical multi-protocol test vector containing HTTP streams, DNS transactions, variable MSS, and bidirectional TCP FIN handshakes.
-3. **`benchmark_50k.pcap`** (38.5 MB, 50,000 packets): High-concurrency stress test consisting of 500 interleaved bidirectional TCP flows, variable payload distributions (64–576 bytes), and burst state changes.
+3. **`benchmark_50k.pcap`** (15.6 MB, 50,000 packets): High-concurrency stress test consisting of 500 interleaved bidirectional TCP flows, variable payload distributions (64–576 bytes), and burst state changes. *Original 38.5 MB trace is regenerated deterministically by `scripts/gen_benchmark_50k.py` (`tests/data/benchmark_50k.pcap`, 50,000 pkts / 500 flows, measured 2026-09-24).*
 4. **`DEF CON 26 CTF packet captures.pcapng`** (49 GB, 156,114,913 packets): Real adversarial capture from the DEF CON 26 CTF 2018 network — pcapng (linktype Ethernet), TCP-dominated game traffic spanning the entire event. Used as full-capture stability/throughput workload plus three byte-exact 200,000-packet subsets (head/mid/tail) for the CICFlow-vs-Rust comparison (see `experiments/20260923-020154_Local_Computer/analysis.md`).
 
 ---
@@ -142,8 +142,19 @@ All evaluations were executed on a standardized test environment:
   head subset (200k pkts)               1,301 pkts/s         188,977 pkts/s        145.3x
   mid subset (200k pkts)                  947 pkts/s         287,288 pkts/s        303.4x
   tail subset (200k pkts)               1,366 pkts/s         303,389 pkts/s        222.1x
-  Full 49 GB capture (156.1M pkts)      ~33 h (extrapol.)    ~700 s real           ~172x
+ Full 49 GB capture (156.1M pkts)		~33 h (extrapol.)	~700 s real	~172x
 ====================================================================================================
+ LOCAL_COMPUTER RE-MEASUREMENT OF WORKLOADS 1-3 + 6 (2026-09-24, Evaluation-Results.md section 3b)
+ ===================================================================================================
+  Dataset                                      Python pkts/s       Rust pkts/s         Speedup
+ ----------------------------------------------------------------------------------------------------
+  W1 benchmark_50k (50k pkts, 500 flows)             855            223,812             261.7x
+  W2 real_traffic (402 pkts)                          68              4,893              72.0x
+  W3 sample_traffic (43 pkts)                         10                503              53.9x
+  W6 cargo bench: parser (500k in-RAM)                 -           1,563,388              (n/a)
+  W6 cargo bench: engine+aggregation (500k)            -             361,123              (n/a)
+ ===================================================================================================
+ Parity W1/W3: 41+31/0 discrepancy-free status per Evaluation-Results.md Table 3b-2.
 ```
 
 #### Processing Time Comparison (Wall-Clock Seconds for 50,000 Packets)

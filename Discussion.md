@@ -176,6 +176,17 @@ the frame EtherType (2048) in its `protocol` column instead of the IP protocol i
 `cwr_flag_count` as a copy of `fwd_urg_flags` with `fwd/bwd_seg_size_avg` as copies
 of the packet-length means.
 
+**2026-09-24 synthetic-path evidence (W1, `benchmark_50k`).** A fresh harness
+pass on the deterministically regenerated 50k-packet / 500-flow stress trace
+(`scripts/gen_benchmark_50k.py`; run `experiments/20260924-184129_Local_Computer/`)
+yields 500/500 matched flows with parity **41 exact + 31 concordant + only 4
+discrepant features of 76** — and those four are precisely the definitional
+classes already traced (`Total Length of Fwd/Bwd Packet`, `Fwd PSH Flags`,
+`Fwd Act Data Pkts`). With segmentation provably removed from the equation
+(uniform IATs, no idle gaps), engine math and upstream semantics drift are
+empirically isolated: the CICFlow-vs-Rust residual on real traffic is
+semantics, not computation.
+
 ## 5. Why the remaining real_traffic discrepancies are acceptable
 
 The 23 discrepant features on `real_traffic.pcap` are all small, structurally
