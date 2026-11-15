@@ -19,6 +19,7 @@ pub struct PcapReader<R: Read> {
     link_type: u32,
     is_pcapng: bool,
     pcapng_interfaces: Vec<PcapngInterface>,
+    classic_eof: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -53,6 +54,7 @@ impl<R: Read + Seek> PcapReader<R> {
                 link_type: 1,
                 is_pcapng: true,
                 pcapng_interfaces: Vec::new(),
+                classic_eof: false,
             };
             pcap_reader.init_pcapng()?;
             Ok(pcap_reader)
@@ -89,6 +91,7 @@ impl<R: Read + Seek> PcapReader<R> {
                 link_type,
                 is_pcapng: false,
                 pcapng_interfaces: Vec::new(),
+                classic_eof: false,
             })
         }
     }
@@ -130,10 +133,27 @@ impl<R: Read + Seek> PcapReader<R> {
     }
 
     fn next_classic_pcap_packet(&mut self) -> Result<Option<BasicPacketInfo>> {
+        // Loop past frames the parser skips (ARP, LLDP, other non-IP ethertypes).
+        // Returning the parser's Ok(None) directly would read as end-of-file to the
+        // caller's `while let Some(..)` loop and silently truncate the capture.
+        loop {
+            if let Some(pkt) = self.read_one_classic_packet()? {
+                return Ok(Some(pkt));
+            }
+            if self.classic_eof {
+                return Ok(None);
+            }
+        }
+    }
+
+    fn read_one_classic_packet(&mut self) -> Result<Option<BasicPacketInfo>> {
         let mut pkt_hdr = [0u8; 16];
         match self.reader.read_exact(&mut pkt_hdr) {
             Ok(_) => {}
-            Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => return Ok(None),
+            Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => {
+                self.classic_eof = true;
+                return Ok(None);
+            }
             Err(e) => return Err(CicError::Io(e)),
         }
 
